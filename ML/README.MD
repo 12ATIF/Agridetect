@@ -1,7 +1,8 @@
-# Machine Learning Home Agriculture Monitoring System
-We'll use TensorFlow 2 to create an image classification model, train it with a leaf disease dataset, and convert it to TensorFlow Lite using post-training quantization.
+# Machine Learning part for DermaFace APP
+We use tensorflow library to create image classfication model, train the model with our dataset, and then convert it to Tensorflow lite using post-training quantization.
 
-The model is based on a pre-trained version of MobileNet V2. We'll start by retraining only the classification layers, reusing MobileNet's pre-trained feature extractor layers. Then we'll fine-tune the model by updating weights in some of the feature extractor layers. This type of transfer learning is much faster than training the entire model from scratch.
+
+The model is based on a pre-trained version of MobileNet V2 and we add some extra layers for increasing accuracy. The reason why using MobileNetV2 is because this model is popularly known to have a small size while still maintain good accuracy. Using this transfer learning approach help us to make a more reliable and faster model without training from the scratch. 
 
 Once it's trained, we'll use post-training quantization to convert all parameters to int8 format, which reduces the model size and increases inferencing speed. This format is also required for compatibility on the TFlite in android.
 
@@ -13,6 +14,7 @@ Once it's trained, we'll use post-training quantization to convert all parameter
 
 * Tensorflow 
 * Numpy
+* Matplotlib
 
 In order to quantize both the input and output tensors, we need TFLiteConverter APIs that are available in TensorFlow r2.3 or higher:
 
@@ -25,8 +27,6 @@ In order to quantize both the input and output tensors, we need TFLiteConverter 
  * We use ImageDataGenerator to rescale the image data into float values (divide by 255 so the tensor values are between 0 and 1), and call flow_from_directory() to create two generators: one for the training dataset and one for the validation dataset.
  
  * On each iteration, these generators provide a batch of images by reading images from disk and processing them to the proper tensor size (224 x 224). The output is a tuple of (images, labels).
- 
- * Save the class labels to a text file.
   
 # Build the model
 
@@ -38,55 +38,27 @@ We'll start with [MobileNet V2](https://www.tensorflow.org/api_docs/python/tf/ke
 
 # Create the base model
 
-When instantiating the [MobileNet V2](https://www.tensorflow.org/api_docs/python/tf/keras/applications/mobilenet_v2), we specify the include_top=False argument in order to load the network without the classification layers at the top. Then we set trainable false to freeze all the weights in the base model. This effectively converts the model into a feature extractor because all the pre-trained weights and biases are preserved in the lower layers when we begin training for our classification head.
+When instantiating the [MobileNet V2](https://www.tensorflow.org/api_docs/python/tf/keras/applications/mobilenet_v2), we set trainable false to freeze all the weights in the base model. This action should be done because we don't want model to using the weight that it already learn, also it can reduce time and prevent overfitting.
 
-# Add a classification head
+# Add a costumization layers
+For the better accuracy and reduce loss we decided to use this costumization layers below:
+![Screenshot 2024-06-21 013157](https://github.com/wahyuardiantito/DermaFace-An-App-For-Your-Facial-Skin-and-Care/assets/102838149/450dbf1d-e035-4654-8969-8d001fb15d97)
 
-Now we create a new [Sequential](https://www.tensorflow.org/api_docs/python/tf/keras/Sequential) model and pass the frozen [MobileNet V2](https://www.tensorflow.org/api_docs/python/tf/keras/applications/mobilenet_v2) as the base of the graph, and append new classification layers so we can set the final output dimension to match the number of classes in our dataset.
-
-# Configure the model :
-
-Although this method is called compile(), it's basically a configuration step that's required before we can start training. And because the majority of the model graph is frozen in the base model, weights from only the last convolution and dense layers are trainable.
+# Configure the model and fine tune :
+for the fine tune and configure, we use Adam for the optimiser with the default learning rate (0.001). We also use Categorical Crossentropy for the loss function. After that we compile the model using .compile() function. This step is needed so we can train the model with our dataset
 
 # Train the model
 
 Now we can train the model using data provided by the train_generator and val_generator that we created at the beginning.
-![image](https://user-images.githubusercontent.com/67249292/120916823-f07d2880-c6d5-11eb-8635-c5323aca9741.png)
-
-# Fine tune the base model
-
-So far, we've only trained the classification layers—the weights of the pre-trained network were not changed.
-
-One way we can increase the accuracy is to train (or "fine-tune") more layers from the pre-trained model. That is, we'll un-freeze some layers from the base model and adjust those weights (which were originally trained with 1,000 ImageNet classes) so they're better tuned for features found in our leaf disease dataset.
-
-# Un-freeze more layers
-So instead of freezing the entire base model, we'll freeze individual layers.
-
-# Reconfigure the model
-Now configure the model again, but this time with a lower learning rate (the default is 0.001).
-
-# Continue training
-Now let's fine-tune all trainable layers. This starts with the weights we already trained in the classification layers, so we don't need as many epochs.
+![image](https://github.com/wahyuardiantito/DermaFace-An-App-For-Your-Facial-Skin-and-Care/assets/102838149/c981f51b-73c0-47ef-9b4f-0a76e8167dd2)
+![Screenshot 2024-06-20 233029](https://github.com/wahyuardiantito/DermaFace-An-App-For-Your-Facial-Skin-and-Care/assets/102838149/1f2643ac-d41e-4772-9615-a778dbd003cd)
+![Screenshot 2024-06-20 233002](https://github.com/wahyuardiantito/DermaFace-An-App-For-Your-Facial-Skin-and-Care/assets/102838149/9957f13d-1930-42dc-aee7-7ce2c089a8db)
 
 Our model better, but it's not ideal.
 
 The validation loss is still higher than the training loss, so there could be some overfitting during training. The overfitting might also be because the new training set is relatively small with less intra-class variance, compared to the original ImageNet dataset used to train [MobileNet V2](https://www.tensorflow.org/api_docs/python/tf/keras/applications/mobilenet_v2).
 
-So this model isn't trained to an accuracy that's production ready, but it works well enough as a demonstration.
-
-# Save all the models that have been trained
-You can check here to see all the models that have been built [model_project](https://github.com/maulanaakbardj/Home-Agriculture-Monitoring-System/tree/main/ML/model_project)
-
 # Convert Model to TFLite
 Ordinarily, creating a TensorFlow Lite model is just a few lines of code with [TFLiteConverter](https://www.tensorflow.org/api_docs/python/tf/lite/TFLiteConverter). 
 
-However, this .tflite file still uses floating-point values for the parameter data, and we need to fully quantize the model to int8 format.
-
 To fully quantize the model, we need to perform [post-training quantization](https://www.tensorflow.org/lite/performance/post_training_quantization) with a representative dataset, which requires a few more arguments for the TFLiteConverter, and a function that builds a dataset that's representative of the training dataset.
-
-You can check here to see [result TFLite](https://github.com/maulanaakbardj/Home-Agriculture-Monitoring-System/tree/main/ML/TFLite)
-
-# Compare the accuracy
-We have a fully quantized TensorFlow Lite model. To be sure the conversion went well, so we compare it.
-
-But again, these results are not ideal but better for prototype.
