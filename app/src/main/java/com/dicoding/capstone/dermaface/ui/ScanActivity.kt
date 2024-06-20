@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
@@ -39,21 +38,12 @@ class ScanActivity : AppCompatActivity() {
         ViewModelFactory(scanRepository = ScanRepository(this))
     }
 
-    private val storagePermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            loadImageFromIntent()
-        } else {
-            Toast.makeText(this, R.string.permission_storage_needed, Toast.LENGTH_SHORT).show()
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityScanBinding.inflate(layoutInflater)
-        enableEdgeToEdge()
         setContentView(binding.root)
+
+        enableEdgeToEdge()
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -66,7 +56,6 @@ class ScanActivity : AppCompatActivity() {
                 visibility = if (statusMessage.isNullOrEmpty()) View.GONE else View.VISIBLE
             }
         }
-
 
         scanViewModel.modelReady.observe(this) { isReady ->
             binding.btnScan.isEnabled = isReady
@@ -86,11 +75,11 @@ class ScanActivity : AppCompatActivity() {
         }
 
         binding.btnScan.setOnClickListener {
-            if (!scanViewModel.modelReady.value!!) {
+            if (scanViewModel.modelReady.value == true) {
+                startScanning()
+            } else {
                 Toast.makeText(this, R.string.model_not_ready, Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
             }
-            startScanning()
         }
 
         binding.tvCancel.setOnClickListener {
@@ -109,8 +98,6 @@ class ScanActivity : AppCompatActivity() {
                 finish()
             }
         }
-
-        storagePermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
 
         loadImageFromIntent()
     }

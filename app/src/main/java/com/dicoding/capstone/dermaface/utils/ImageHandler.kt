@@ -1,7 +1,9 @@
 package com.dicoding.capstone.dermaface.utils
 
+import android.Manifest
 import android.app.AlertDialog
 import android.net.Uri
+import android.os.Build
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,6 +26,7 @@ class ImageHandler(
                 Toast.makeText(activity, R.string.capture_error, Toast.LENGTH_SHORT).show()
             }
         }
+
     private val galleryLauncher: ActivityResultLauncher<String> =
         activity.registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             uri?.let { viewModel.setImageUri(it) }
@@ -34,10 +37,15 @@ class ImageHandler(
             if (granted) openCamera()
             else showPermissionDeniedMessage()
         }
-    private val galleryPermissionLauncher: ActivityResultLauncher<String> =
-        activity.registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            if (granted) openGallery()
-            else showPermissionDeniedMessage()
+
+    private val galleryPermissionLauncher: ActivityResultLauncher<Array<String>> =
+        activity.registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            if (permissions[Manifest.permission.READ_EXTERNAL_STORAGE] == true ||
+                permissions[Manifest.permission.READ_MEDIA_IMAGES] == true) {
+                openGallery()
+            } else {
+                showPermissionDeniedMessage()
+            }
         }
 
     fun showImageSourceDialog() {
@@ -59,11 +67,16 @@ class ImageHandler(
     }
 
     private fun requestCameraPermission() {
-        cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA)
+        cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
     }
 
     private fun requestGalleryPermission() {
-        galleryPermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+        val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            arrayOf(Manifest.permission.READ_MEDIA_IMAGES)
+        } else {
+            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+        galleryPermissionLauncher.launch(permissions)
     }
 
     private fun openCamera() {
