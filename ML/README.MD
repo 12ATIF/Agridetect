@@ -7,7 +7,7 @@ The model is based on a pre-trained version of MobileNet V2 and we add some extr
 Once it's trained, we'll use post-training quantization to convert all parameters to int8 format, which reduces the model size and increases inferencing speed. This format is also required for compatibility on the TFlite in android.
 
 # Notebook ML 
-[Fix notebook](https://github.com/maulanaakbardj/Home-Agriculture-Monitoring-System/blob/main/ML/notebook/leaf_classification_fix.ipynb)
+[Fix notebook](https://github.com/wahyuardiantito/DermaFace-An-App-For-Your-Facial-Skin-and-Care/blob/main/ML/Fix_Notebook.ipynb)
 
 # Import the required libraries :
 **Note**: This notebook requires TensorFlow 2.3+ for full quantization, which currently does not work for all types of models. In particular, this notebook expects a Keras-built model and this conversion strategy currently doesn't work with models imported from a frozen graph. 
@@ -19,10 +19,8 @@ Once it's trained, we'll use post-training quantization to convert all parameter
 In order to quantize both the input and output tensors, we need TFLiteConverter APIs that are available in TensorFlow r2.3 or higher:
 
 # Prepare the training data
-
-* First let's download and organize the leaf disease dataset we'll use to retrain the model. Here we use an example of a leaf disease dataset image from Kaggle ( [plantdisease](https://www.kaggle.com/emmarex/plantdisease), [new-plant-diseases-dataset](https://www.kaggle.com/vipoooool/new-plant-diseases-dataset),[rice-leaf-diseases](https://www.kaggle.com/vbookshelf/rice-leaf-diseases) ) 
- 
- * Of several datasets combined into one [dataset](https://github.com/maulanaakbardj/Home-Agriculture-Monitoring-System/tree/main/ML/Data)
+Our dataset obtained by web scarping image in internet. The dataset contains 11 class, here's the link for dataset
+[dataset](https://drive.google.com/drive/folders/1xUcEMdr4LD6tqIEwdWfiopCGxTfTKFNy?usp=sharing)
  
  * We use ImageDataGenerator to rescale the image data into float values (divide by 255 so the tensor values are between 0 and 1), and call flow_from_directory() to create two generators: one for the training dataset and one for the validation dataset.
  
