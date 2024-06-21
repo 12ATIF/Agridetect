@@ -11,7 +11,6 @@
 - [Instalasi](#instalasi)
 - [Penggunaan](#penggunaan)
 - [Kontribusi](#kontribusi)
-- [Lisensi](#lisensi)
 - [Kontak](#kontak)
 - [Anggota Kelompok](#anggota-kelompok)
 
@@ -26,11 +25,10 @@
 
 1. **Desain UI di Figma**
    - Mendesain antarmuka pengguna yang menarik dan mudah digunakan.
-   - [Contoh Desain Figma](https://link-ke-figma.com) <!-- Ganti link dengan yang sesuai -->
+   - [Desain Figma](https://www.figma.com/design/41kR9ZXvR5QTEj7eNnguAW/DermaFace?node-id=0-1&t=m9Aa9tCVLZDglX04-1) <!-- Ganti link dengan yang sesuai -->
 
 2. **Konversi Desain ke Layout XML di Android Studio**
    - Mengimplementasikan desain Figma ke dalam layout XML untuk Android.
-   - [Contoh Layout XML](https://link-ke-layout-xml.com) <!-- Ganti link dengan yang sesuai -->
 
 3. **Integrasi Autentikasi Google Firebase**
    - Menyediakan opsi login menggunakan Google untuk kemudahan pengguna.
@@ -42,9 +40,11 @@
    - [Dokumentasi Firebase Realtime Database](https://firebase.google.com/docs/database)
 
 5. **Integrasi Model Pembelajaran Mesin dengan Firebase ML**
-   - Menggunakan model MobileNetV2 untuk deteksi penyakit kulit wajah.
+   - Menggunakan model Machine Learning untuk deteksi penyakit kulit wajah.
    - Model disimpan di Firebase ML dan diunduh oleh aplikasi untuk menganalisis gambar yang diunggah pengguna.
-   - [Dokumentasi Firebase ML](https://firebase.google.com/docs/ml)
+   - - Nama model: `Face_Detection`
+   - [Dokumentasi Firebase ML](https://firebase.google.com/docs/ml)   
+   - [Link Model](https://drive.google.com/file/d/1xJ7R9ANRQRVOhv2Jb7go1CHKI0MP4pjS/view?usp=sharing)
 
 6. **Penyimpanan Hasil Analisis di Firestore Firebase**
    - Menyimpan hasil deteksi penyakit kulit dan tips perawatan di Firestore.
@@ -76,6 +76,7 @@ Ikuti langkah-langkah berikut untuk menginstal dan menjalankan aplikasi ini:
 
 3. **Konfigurasi Firebase**
     - Tambahkan file `google-services.json` ke direktori `app`.
+    - Upload model `modelquantized.tflite` ke firebase ML dengan nama `Face_Detection`
     - Konfigurasi Firebase dalam aplikasi dengan mengikuti petunjuk di [Firebase Documentation](https://firebase.google.com/docs).
 
 4. **Jalankan aplikasi**
@@ -107,13 +108,9 @@ Kami menyambut kontribusi dari siapa pun. Untuk berkontribusi, silakan lakukan l
     ```
 5. Buat Pull Request.
 
-## Lisensi
-
-Proyek ini dilisensikan di bawah lisensi MIT - lihat file [LICENSE](LICENSE) untuk detailnya.
-
 ## Kontak
 
-Untuk pertanyaan lebih lanjut, hubungi [email@example.com](mailto:email@example.com).
+Untuk pertanyaan lebih lanjut, hubungi [mukhtarijal6902@gmail.com](mukhtarijal6902@gmail.com).
 
 ## Anggota Kelompok
 
@@ -122,10 +119,10 @@ Untuk pertanyaan lebih lanjut, hubungi [email@example.com](mailto:email@example.
 - **M734D4KX1910** – Juliani Jakin – Institut Sains dan Teknologi Nasional
 - **M281D4KX3359** – Rabiahtul Adawiah Hasyani – Universitas Negeri Medan
 
-### Content Creation (CC)
-- **C382D4KY0695** – Riski Dwi Prakoso – Universitas Merdeka Malang
-- **C732D4KX1260** – Nilam Darma Taksiah – Universitas Bung Hatta
-
 ### Mobile Development (MD)
 - **A282D4KX3580** – Hayatun Nupus – Universitas Negeri Padang
 - **A282D4KY3619** – Mukhtarijal – Universitas Negeri Padang
+
+### Cloud Computing (CC)
+- **C382D4KY0695** – Riski Dwi Prakoso – Universitas Merdeka Malang
+- **C732D4KX1260** – Nilam Darma Taksiah – Universitas Bung Hatta
