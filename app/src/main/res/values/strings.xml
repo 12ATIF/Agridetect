@@ -89,4 +89,9 @@
     <string name="recent_scans">Pemindaian Terbaru</string>
     <string name="pull_to_refresh">Tarik ke bawah untuk memuat ulang</string>
     <string name="view_all_history">Lihat Semua Riwayat</string>
+    <string name="no_history_available">Belum ada riwayat pemindaian</string>
+    <string name="error_loading_history">Gagal memuat riwayat</string>
+
+    <string name="view_history">Lihat Riwayat</string>
+    <string name="menu_history">Riwayat</string>
 </resources>
