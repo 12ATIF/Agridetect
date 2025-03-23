@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "826418542389",
+    "firebase_url": "https://agridetect-accad-default-rtdb.firebaseio.com",
+    "project_id": "agridetect-accad",
+    "storage_bucket": "agridetect-accad.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:826418542389:android:25e250e0e7978d680ebe7c",
+        "android_client_info": {
+          "package_name": "com.dicoding.capstone.dermaface"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "826418542389-26ebbj5v99s5bfp5dgnie8gpi6e7rsk8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dicoding.capstone.dermaface",
+            "certificate_hash": "ac75f42879cb0cf444fc507647e014d1f99edc2e"
+          }
+        },
+        {
+          "client_id": "826418542389-nkv4ughd288ibumklihj2dnuq73oe2jo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAiEsd4QJ6qUFrM8yZzxv8yWERJiuszEjE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "826418542389-nkv4ughd288ibumklihj2dnuq73oe2jo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

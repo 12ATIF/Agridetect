@@ -1,8 +1,7 @@
 plugins {
-    alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("com.google.gms.google-services")
-
+    id("com.android.application")
 }
 
 android {
@@ -17,7 +16,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "BASE_URL", "\"https://dermaface-8d97f-default-rtdb.asia-southeast1.firebasedatabase.app/article.json\"")
+        buildConfigField("String", "BASE_URL", "\"https://dermaface-8d97f-default-rtdb.asia-southeast1.firebasedataase.app/article.json\"")
     }
 
     buildTypes {
@@ -43,43 +42,59 @@ android {
 }
 
 dependencies {
+    // TensorFlow Lite
+    implementation("org.tensorflow:tensorflow-lite:2.3.0")
+    implementation(libs.tensorflow.lite)
+    implementation(libs.tensorflow.lite.support)
 
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation("com.google.firebase:firebase-database")
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth")
+    implementation(libs.firebase.storage.ktx)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.analytics.ktx)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.ml.modeldownloader)
+
+    // AndroidX
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.play.services.base)
-    implementation(libs.firebase.auth)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
-    implementation(libs.googleid)
-    implementation(libs.firebase.storage.ktx)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth.ktx)
-    implementation(libs.play.services.auth)
-    implementation(libs.firebase.analytics.ktx)
-    implementation(libs.google.firebase.auth.ktx)
-    implementation(libs.firebase.firestore.ktx)
-    implementation (libs.google.firebase.firestore.ktx)
-    implementation (libs.firebase.ml.modeldownloader)
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
-    implementation(libs.com.google.firebase.firebase.auth.ktx)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    // Google Play Services
+    implementation(libs.play.services.base)
+    implementation(libs.play.services.auth)
+    implementation("com.google.android.gms:play-services-auth:21.3.0")
+    implementation(libs.googleid)
+
+    // Kotlin Coroutines
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
-    implementation (libs.androidx.lifecycle.runtime.ktx)
-    implementation (libs.tensorflow.lite)
-    implementation (libs.tensorflow.lite.support)
-    implementation (libs.retrofit)
-    implementation (libs.converter.gson)
-    implementation (libs.logging.interceptor)
-    implementation (libs.glide)
-    implementation (libs.yalantis.ucrop)
+
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.logging.interceptor)
+
+    // Glide
+    implementation(libs.glide)
+
+    // uCrop
+    implementation(libs.yalantis.ucrop)
+    // Testing
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }

@@ -1,16 +1,18 @@
 package com.dicoding.capstone.dermaface.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.dicoding.capstone.dermaface.data.model.HistoryResponse
 import com.dicoding.capstone.dermaface.databinding.ItemHistoryBinding
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
 class HistoryAdapter(
-    private val histories: List<HistoryResponse>,
+    private val histories: MutableList<HistoryResponse> = mutableListOf(),
     private val onItemClick: (HistoryResponse) -> Unit,
     private val onDeleteClick: (HistoryResponse) -> Unit
 ) : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
@@ -31,10 +33,19 @@ class HistoryAdapter(
         holder.binding.tvDate.text = dateFormat.format(date)
         holder.binding.tvDiagnosis.text = history.diagnosis
 
+        // Load image
         if (history.image_url.isNotEmpty()) {
-            Glide.with(holder.itemView.context)
-                .load(history.image_url)
-                .into(holder.binding.ivHistoryImage)
+            val imageFile = File(history.image_url)
+            if (imageFile.exists()) {
+                Glide.with(holder.itemView.context)
+                    .load(imageFile)
+                    .into(holder.binding.ivHistoryImage)
+            } else {
+                // Try as URL if not a valid file
+                Glide.with(holder.itemView.context)
+                    .load(history.image_url)
+                    .into(holder.binding.ivHistoryImage)
+            }
         } else {
             Glide.with(holder.itemView.context).clear(holder.binding.ivHistoryImage)
         }
@@ -44,4 +55,11 @@ class HistoryAdapter(
     }
 
     override fun getItemCount() = histories.size
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateHistories(newHistories: List<HistoryResponse>) {
+        histories.clear()
+        histories.addAll(newHistories)
+        notifyDataSetChanged()
+    }
 }

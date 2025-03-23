@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dicoding.capstone.dermaface.R
 import com.dicoding.capstone.dermaface.repository.ScanRepository
+import com.dicoding.capstone.dermaface.utils.ScanUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -23,16 +24,16 @@ class ScanViewModel(private val scanRepository: ScanRepository) : ViewModel() {
     val modelStatusMessage: MutableLiveData<String?> get() = _modelStatusMessage
 
     init {
-        downloadModel()
+        loadModel()
     }
 
-    private fun downloadModel() {
+    private fun loadModel() {
         _modelReady.value = false
-        _modelStatusMessage.value = "Downloading model..."
+        _modelStatusMessage.value = scanRepository.context.getString(R.string.model_downloading)
         scanRepository.downloadModel(
             onModelDownloaded = {
                 _modelReady.postValue(true)
-                _modelStatusMessage.postValue(null)
+                _modelStatusMessage.postValue(scanRepository.context.getString(R.string.model_ready))
             },
             onError = { error ->
                 _modelReady.postValue(false)
@@ -49,13 +50,21 @@ class ScanViewModel(private val scanRepository: ScanRepository) : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val results = withContext(Dispatchers.IO) {
-                    scanRepository.analyzeImage(bitmap)
+                val processedBitmap = withContext(Dispatchers.IO) {
+                    // Apply any preprocessing needed for your model
+                    ScanUtil.preprocessImage(bitmap)
                 }
+
+                val results = withContext(Dispatchers.IO) {
+                    scanRepository.analyzeImage(processedBitmap)
+                }
+
                 if (results != null) {
-                    val (_, diagnosis) = getMaxResult(results)
-                    val recommendation = scanRepository.getRecommendation(diagnosis)
-                    _analysisResult.postValue(diagnosis to recommendation)
+                    val (confidence, diseaseName) = getMaxResult(results)
+                    val recommendation = withContext(Dispatchers.IO) {
+                        scanRepository.getRecommendation(diseaseName)
+                    }
+                    _analysisResult.postValue(diseaseName to recommendation)
                 } else {
                     _analysisResult.postValue("Error" to scanRepository.context.getString(R.string.error_analyzing_image))
                 }
@@ -66,20 +75,35 @@ class ScanViewModel(private val scanRepository: ScanRepository) : ViewModel() {
     }
 
     private fun getMaxResult(confidences: FloatArray): Pair<Float, String> {
+        // Update these labels to match your chili disease classes
         val classLabels = arrayOf(
-            "Actinic Keratosis", "Herpes", "Jerawat",
-            "Kerutan", "Kulit Normal", "Mata Panda", "Milia",
-            "Panu", "Rosacea", "Vitiligo"
+            "Antraknosa",         // anthracnose
+            "Embun Tepung",       // powderymildew
+            "Kutu Kebul",         // kutukebul
+            "Daun Keriting",      // leafcurl
+            "Bercak Daun",        // leafspot
+            "Sehat",              // sehat
+            "Menguning"           // yellowish
         )
 
         var maxConfidence = Float.MIN_VALUE
         var maxIndex = -1
+
         for (i in confidences.indices) {
             if (confidences[i] > maxConfidence) {
                 maxConfidence = confidences[i]
                 maxIndex = i
             }
         }
-        return maxConfidence to classLabels[maxIndex]
+
+        // Handle potential index issues
+        val index = if (maxIndex in classLabels.indices) maxIndex else 0
+        return maxConfidence to classLabels[index]
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        // Clean up resources
+        scanRepository.closeModel()
     }
 }

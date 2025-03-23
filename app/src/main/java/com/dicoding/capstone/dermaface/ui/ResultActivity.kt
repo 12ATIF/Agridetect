@@ -12,24 +12,19 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.dicoding.capstone.dermaface.R
-import com.dicoding.capstone.dermaface.repository.ResultRepository
+import com.dicoding.capstone.dermaface.databinding.ActivityResultBinding
+import com.dicoding.capstone.dermaface.repository.LocalResultRepository
 import com.dicoding.capstone.dermaface.viewmodel.ResultViewModel
 import com.dicoding.capstone.dermaface.viewmodel.ViewModelFactory
-import com.dicoding.capstone.dermaface.databinding.ActivityResultBinding
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
 
 class ResultActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityResultBinding
+    // Di dalam ResultActivity.kt
     private val resultViewModel: ResultViewModel by viewModels {
         ViewModelFactory(
-            resultRepository = ResultRepository(
-                FirebaseFirestore.getInstance(),
-                FirebaseStorage.getInstance(),
-                FirebaseAuth.getInstance()
-            )
+            context = this,
+            localResultRepository = LocalResultRepository(this)
         )
     }
     private var isDataSaved = false
@@ -87,8 +82,8 @@ class ResultActivity : AppCompatActivity() {
     private fun observeViewModel() {
         resultViewModel.saveResult.observe(this) { result ->
             binding.progressBar.visibility = View.GONE
-            result.onSuccess {
-                Toast.makeText(this, R.string.data_saved_successfully, Toast.LENGTH_SHORT).show()
+            result.onSuccess { path ->
+                Toast.makeText(this, getString(R.string.data_saved_successfully), Toast.LENGTH_SHORT).show()
                 isDataSaved = true
             }
             result.onFailure { exception ->

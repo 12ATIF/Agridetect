@@ -1,5 +1,8 @@
 <resources>
-    <string name="app_name">DermaFace</string>
+    <string name="app_name">AgriDetect</string>
+    <string name="welcome">Selamat datang di Agridetect!</string>
+    <string name="app_description">Aplikasi Pendeteksi Penyakit Cabai yang Cepat dan Akurat</string>
+    <string name="app_ds">Dengan AgriDetect, Anda dapat dengan mudah mendeteksi penyakit pada tanaman cabai dan mendapatkan solusi penanganannya. Mari mulai perjalanan pertanian yang lebih sehat!</string>
     <string name="logo">DermaFace Logo</string>
     <string name="login_image">Login Image</string>
     <string name="login_instructions">Silahkan masuk dengan akun Google</string>
@@ -80,4 +83,10 @@
     <string name="logout_confirmation_title">Keluar</string>
     <string name="logout_confirmation_message">Apakah Anda yakin ingin keluar?</string>
     <string name="logout">Iya</string>
+    <string name="default_web_client_id">826418542389-26ebbj5v99s5bfp5dgnie8gpi6e7rsk8.apps.googleusercontent.com</string>
+    <string name="no_scan_history">Belum ada riwayat pemindaian</string>
+    <string name="refresh">Muat ulang</string>
+    <string name="recent_scans">Pemindaian Terbaru</string>
+    <string name="pull_to_refresh">Tarik ke bawah untuk memuat ulang</string>
+    <string name="view_all_history">Lihat Semua Riwayat</string>
 </resources>

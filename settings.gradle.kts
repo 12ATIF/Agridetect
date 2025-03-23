@@ -1,4 +1,7 @@
 pluginManagement {
+    plugins{
+        kotlin("android") version "1.9.22"
+    }
     repositories {
         google {
             content {

@@ -29,7 +29,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintWidth_percent="0.8"
-        android:layout_marginTop="32dp">
+        android:layout_marginTop="16dp">
 
         <ImageView
             android:id="@+id/iv_scan_icon"
@@ -68,34 +68,48 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
     <TextView
-        android:id="@+id/tv_articles"
+        android:id="@+id/tv_history_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="24dp"
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
-        android:text="@string/article"
+        android:text="@string/scan_history"
         android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_scan" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_articles"
+    <FrameLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
-        tools:listitem="@layout/item_article"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_articles"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/tv_history_title"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_history"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            tools:listitem="@layout/item_history" />
+
+        <TextView
+            android:id="@+id/tv_no_history"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/no_history_data"
+            android:textSize="16sp"
+            android:visibility="gone" />
+
+    </FrameLayout>
 
     <ProgressBar
         android:id="@+id/progressBar"

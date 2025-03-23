@@ -4,30 +4,20 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.dicoding.capstone.dermaface.R
 import com.dicoding.capstone.dermaface.databinding.ActivityDetailHistoryBinding
-import com.dicoding.capstone.dermaface.repository.DetailHistoryRepository
-import com.dicoding.capstone.dermaface.viewmodel.DetailHistoryViewModel
-import com.dicoding.capstone.dermaface.viewmodel.ViewModelFactory
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class DetailHistoryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailHistoryBinding
-    private val detailHistoryViewModel: DetailHistoryViewModel by viewModels {
-        ViewModelFactory(
-            detailHistoryRepository = DetailHistoryRepository(
-                FirebaseFirestore.getInstance(),
-                FirebaseAuth.getInstance()
-            )
-        )
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,36 +30,36 @@ class DetailHistoryActivity : AppCompatActivity() {
             insets
         }
 
-        val historyId = intent.getStringExtra("HISTORY_ID")
-        if (historyId != null) {
-            detailHistoryViewModel.fetchHistoryDetails(historyId)
+        // Get data from intent
+        val imagePath = intent.getStringExtra("HISTORY_IMAGE")
+        val diagnosis = intent.getStringExtra("HISTORY_DIAGNOSIS")
+        val recommendation = intent.getStringExtra("HISTORY_RECOMMENDATION")
+        val timestamp = intent.getLongExtra("HISTORY_TIMESTAMP", 0L)
+
+        if (imagePath != null && diagnosis != null) {
+            displayHistoryDetails(imagePath, diagnosis, recommendation ?: "", timestamp)
         } else {
             Toast.makeText(this, R.string.no_history_data, Toast.LENGTH_SHORT).show()
             finish()
         }
-
-        observeViewModel()
 
         binding.btnBack.setOnClickListener {
             finish()
         }
     }
 
-    private fun observeViewModel() {
-        detailHistoryViewModel.historyDetails.observe(this) { history ->
-            binding.progressBar.visibility = View.GONE
-            binding.tvDiagnosis.text = history.diagnosis
-            binding.tvRecommendation.text = history.recommendation
-            Glide.with(this).load(history.image_url).into(binding.ivHistory)
-        }
+    private fun displayHistoryDetails(imagePath: String, diagnosis: String, recommendation: String, timestamp: Long) {
+        binding.progressBar.visibility = View.GONE
+        binding.tvDiagnosis.text = diagnosis
+        binding.tvRecommendation.text = recommendation
 
-        detailHistoryViewModel.isLoading.observe(this) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-        }
-
-        detailHistoryViewModel.error.observe(this) { errorMessage ->
-            binding.progressBar.visibility = View.GONE
-            Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+        // Show image from local file
+        val imageFile = File(imagePath)
+        if (imageFile.exists()) {
+            Glide.with(this).load(imageFile).into(binding.ivHistory)
+        } else {
+            // Try as URL if not a valid file
+            Glide.with(this).load(imagePath).into(binding.ivHistory)
         }
     }
 }

@@ -1,8 +1,8 @@
 package com.dicoding.capstone.dermaface.ui
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -11,30 +11,26 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dicoding.capstone.dermaface.R
 import com.dicoding.capstone.dermaface.adapter.HistoryAdapter
-import com.dicoding.capstone.dermaface.repository.HistoryRepository
+import com.dicoding.capstone.dermaface.repository.LocalHistoryRepository
 import com.dicoding.capstone.dermaface.data.model.HistoryResponse
-import com.dicoding.capstone.dermaface.viewmodel.HistoryViewModel
+import com.dicoding.capstone.dermaface.viewmodel.LocalHistoryViewModel
 import com.dicoding.capstone.dermaface.viewmodel.ViewModelFactory
 import com.dicoding.capstone.dermaface.databinding.ActivityHistoryBinding
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 
 class HistoryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHistoryBinding
-    private val historyViewModel: HistoryViewModel by viewModels {
+    private val historyViewModel: LocalHistoryViewModel by viewModels {
         ViewModelFactory(
-            historyRepository = HistoryRepository(
-                FirebaseFirestore.getInstance(),
-                FirebaseAuth.getInstance()
-            )
+            context = this,
+            localHistoryRepository = LocalHistoryRepository(this)
         )
     }
     private lateinit var historyAdapter: HistoryAdapter
-    private val histories = mutableListOf<HistoryResponse>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +43,7 @@ class HistoryActivity : AppCompatActivity() {
             insets
         }
 
+        Log.d("HistoryActivity", "Activity started")
         setupRecyclerView()
         observeViewModel()
         historyViewModel.fetchHistories()
@@ -56,7 +53,6 @@ class HistoryActivity : AppCompatActivity() {
         }
     }
 
-    @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
     override fun onBackPressed() {
         if (isTaskRoot) {
             navigateToMainActivity()
@@ -73,19 +69,30 @@ class HistoryActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        historyAdapter = HistoryAdapter(histories,
+        historyAdapter = HistoryAdapter(
+            mutableListOf(),
             onItemClick = { history ->
                 val intent = Intent(this, DetailHistoryActivity::class.java).apply {
                     putExtra("HISTORY_ID", history.id)
+                    putExtra("HISTORY_IMAGE", history.image_url)
+                    putExtra("HISTORY_DIAGNOSIS", history.diagnosis)
+                    putExtra("HISTORY_RECOMMENDATION", history.recommendation)
+                    putExtra("HISTORY_TIMESTAMP", history.timestamp)
                 }
                 startActivity(intent)
             },
             onDeleteClick = { history ->
                 showDeleteConfirmationDialog(history)
-            })
+            }
+        )
 
         binding.rvHistory.layoutManager = LinearLayoutManager(this)
         binding.rvHistory.adapter = historyAdapter
+
+        // Tambahkan dekorasi untuk spasi antar item
+        binding.rvHistory.addItemDecoration(
+            DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
+        )
     }
 
     private fun showDeleteConfirmationDialog(history: HistoryResponse) {
@@ -99,15 +106,26 @@ class HistoryActivity : AppCompatActivity() {
             .show()
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private fun observeViewModel() {
         historyViewModel.histories.observe(this) { fetchedHistories ->
             binding.progressBar.visibility = View.GONE
-            histories.clear()
-            if (fetchedHistories != null) {
-                histories.addAll(fetchedHistories)
+            Log.d("HistoryActivity", "Menerima ${fetchedHistories.size} riwayat")
+
+            if (fetchedHistories.isEmpty()) {
+                // Tampilkan pesan "Tidak ada riwayat"
+                if (binding.tvNoHistory != null) {
+                    binding.tvNoHistory.visibility = View.VISIBLE
+                    binding.rvHistory.visibility = View.GONE
+                } else {
+                    Log.e("HistoryActivity", "tvNoHistory is null")
+                }
+            } else {
+                if (binding.tvNoHistory != null) {
+                    binding.tvNoHistory.visibility = View.GONE
+                }
+                binding.rvHistory.visibility = View.VISIBLE
+                historyAdapter.updateHistories(fetchedHistories)
             }
-            historyAdapter.notifyDataSetChanged()
         }
 
         historyViewModel.isLoading.observe(this) { isLoading ->

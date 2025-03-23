@@ -6,7 +6,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.dicoding.capstone.dermaface.repository.ArticleRepository
 import com.dicoding.capstone.dermaface.repository.DetailHistoryRepository
 import com.dicoding.capstone.dermaface.repository.HistoryRepository
-import com.dicoding.capstone.dermaface.repository.ResultRepository
+import com.dicoding.capstone.dermaface.repository.LocalHistoryRepository
+import com.dicoding.capstone.dermaface.repository.LocalResultRepository
 import com.dicoding.capstone.dermaface.repository.ScanRepository
 import com.dicoding.capstone.dermaface.repository.SplashRepository
 import com.dicoding.capstone.dermaface.repository.UserRepository
@@ -17,7 +18,8 @@ class ViewModelFactory(
     private val userRepository: UserRepository? = null,
     private val articleRepository: ArticleRepository? = null,
     private val scanRepository: ScanRepository? = null,
-    private val resultRepository: ResultRepository? = null,
+    private val localResultRepository: LocalResultRepository? = null,
+    private val localHistoryRepository: LocalHistoryRepository? = null,
     private val historyRepository: HistoryRepository? = null,
     private val detailHistoryRepository: DetailHistoryRepository? = null,
     private val splashRepository: SplashRepository? = null
@@ -38,16 +40,24 @@ class ViewModelFactory(
                     ?: error("UserRepository not provided")
             }
             modelClass.isAssignableFrom(ScanViewModel::class.java) -> {
-                scanRepository?.let { ScanViewModel(it) } ?: context?.let { ScanViewModel(ScanRepository(it)) }
-                ?: error("Context or ScanRepository not provided")
+                scanRepository?.let { ScanViewModel(it) }
+                    ?: context?.let { ScanViewModel(ScanRepository(it)) }
+                    ?: error("ScanRepository not provided")
             }
             modelClass.isAssignableFrom(ResultViewModel::class.java) -> {
-                resultRepository?.let { ResultViewModel(it) }
-                    ?: error("ResultRepository not provided")
+                localResultRepository?.let { ResultViewModel(it) }
+                    ?: context?.let { ResultViewModel(LocalResultRepository(it)) }
+                    ?: error("LocalResultRepository not provided")
+            }
+            modelClass.isAssignableFrom(LocalHistoryViewModel::class.java) -> {
+                localHistoryRepository?.let { LocalHistoryViewModel(it) }
+                    ?: context?.let { LocalHistoryViewModel(LocalHistoryRepository(it)) }
+                    ?: error("LocalHistoryRepository not provided")
             }
             modelClass.isAssignableFrom(HistoryViewModel::class.java) -> {
-                historyRepository?.let { HistoryViewModel(it) }
-                    ?: error("HistoryRepository not provided")
+                localHistoryRepository?.let { HistoryViewModel(it) }
+                    ?: context?.let { HistoryViewModel(LocalHistoryRepository(it)) }
+                    ?: error("LocalHistoryRepository not provided")
             }
             modelClass.isAssignableFrom(DetailHistoryViewModel::class.java) -> {
                 detailHistoryRepository?.let { DetailHistoryViewModel(it) }
