@@ -26,6 +26,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
+import androidx.appcompat.app.AlertDialog
 
 class ScanActivity : AppCompatActivity() {
 
@@ -61,17 +62,33 @@ class ScanActivity : AppCompatActivity() {
             binding.btnScan.isEnabled = isReady
         }
 
+        // Di ScanActivity.kt, perbarui observer untuk analysisResult
         scanViewModel.analysisResult.observe(this) { result ->
             val diagnosis = result.first
             val recommendation = result.second
 
-            val intent = Intent(this, ResultActivity::class.java).apply {
-                putExtra(ResultActivity.EXTRA_IMAGE_URI, intent.getStringExtra(EXTRA_IMAGE_URI))
-                putExtra(ResultActivity.EXTRA_DIAGNOSIS, diagnosis)
-                putExtra(ResultActivity.EXTRA_RECOMMENDATION, recommendation)
+            if (diagnosis == "Error") {
+                // Tampilkan dialog error
+                AlertDialog.Builder(this)
+                    .setTitle(R.string.scan_error)
+                    .setMessage(recommendation)
+                    .setPositiveButton(R.string.ok) { dialog, _ ->
+                        dialog.dismiss()
+                        binding.scannerLine.visibility = View.GONE
+                        // Tidak perlu finish() agar pengguna bisa coba lagi
+                    }
+                    .setCancelable(false)
+                    .show()
+            } else {
+                // Lanjutkan ke ResultActivity seperti biasa
+                val intent = Intent(this, ResultActivity::class.java).apply {
+                    putExtra(ResultActivity.EXTRA_IMAGE_URI, intent.getStringExtra(EXTRA_IMAGE_URI))
+                    putExtra(ResultActivity.EXTRA_DIAGNOSIS, diagnosis)
+                    putExtra(ResultActivity.EXTRA_RECOMMENDATION, recommendation)
+                }
+                startActivity(intent)
+                finish()
             }
-            startActivity(intent)
-            finish()
         }
 
         binding.btnScan.setOnClickListener {

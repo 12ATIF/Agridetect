@@ -8,13 +8,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.dicoding.capstone.dermaface.R
-import com.dicoding.capstone.dermaface.data.model.OGS8pWLl3rnbNgRzzItem
+import com.dicoding.capstone.dermaface.data.model.ChiliInfoItem
 import com.dicoding.capstone.dermaface.databinding.ItemArticleBinding
 import com.dicoding.capstone.dermaface.ui.ArticleActivity
 
 class ArticleAdapter(
     private val context: Context,
-    private var articles: List<OGS8pWLl3rnbNgRzzItem>
+    private var articles: List<ChiliInfoItem>
 ) : RecyclerView.Adapter<ArticleAdapter.ArticleViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleViewHolder {
@@ -42,7 +42,7 @@ class ArticleAdapter(
     override fun getItemCount(): Int = articles.size
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateArticles(newArticles: List<OGS8pWLl3rnbNgRzzItem>) {
+    fun updateArticles(newArticles: List<ChiliInfoItem>) {
         this.articles = newArticles
         notifyDataSetChanged()
     }

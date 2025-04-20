@@ -3,13 +3,11 @@ package com.dicoding.capstone.dermaface.data.model
 import com.google.gson.annotations.SerializedName
 
 data class NewsResponse(
-
-	@field:SerializedName("-O-gS8pWLl3rnbNg-rzz")
-	val oGS8pWLl3rnbNgRzz: List<OGS8pWLl3rnbNgRzzItem?>? = null
+	@field:SerializedName("-ChiliInfo2025")
+	val chiliInfo2025: List<ChiliInfoItem?>? = null
 )
 
-data class OGS8pWLl3rnbNgRzzItem(
-
+data class ChiliInfoItem(
 	@field:SerializedName("image_url")
 	val imageUrl: String? = null,
 

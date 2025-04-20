@@ -50,11 +50,25 @@ class ScanViewModel(private val scanRepository: ScanRepository) : ViewModel() {
 
         viewModelScope.launch {
             try {
+                _modelStatusMessage.value = scanRepository.context.getString(R.string.validating_image)
+
                 val processedBitmap = withContext(Dispatchers.IO) {
-                    // Apply any preprocessing needed for your model
                     ScanUtil.preprocessImage(bitmap)
                 }
 
+                // Verifikasi apakah gambar adalah tanaman cabai
+                val isChiliPlant = withContext(Dispatchers.IO) {
+                    scanRepository.verifyChiliPlant(processedBitmap)
+                }
+
+                if (!isChiliPlant) {
+                    _analysisResult.postValue("Error" to scanRepository.context.getString(R.string.not_chili_plant))
+                    return@launch
+                }
+
+                _modelStatusMessage.value = scanRepository.context.getString(R.string.analyzing_image)
+
+                // Lanjutkan dengan analisis penyakit jika validasi berhasil
                 val results = withContext(Dispatchers.IO) {
                     scanRepository.analyzeImage(processedBitmap)
                 }
@@ -70,9 +84,12 @@ class ScanViewModel(private val scanRepository: ScanRepository) : ViewModel() {
                 }
             } catch (e: Exception) {
                 _analysisResult.postValue("Error" to "${scanRepository.context.getString(R.string.error_analyzing_image)}: ${e.message}")
+            } finally {
+                _modelStatusMessage.value = ""
             }
         }
     }
+
 
     private fun getMaxResult(confidences: FloatArray): Pair<Float, String> {
         // Update these labels to match your chili disease classes

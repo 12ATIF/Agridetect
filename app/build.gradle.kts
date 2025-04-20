@@ -26,6 +26,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "BASE_URL", "\"https://api-artikel-weld.vercel.app/api/articles/chili\"")
+        }
+        debug {
+            buildConfigField("String", "BASE_URL", "\"https://api-artikel-weld.vercel.app/api/articles/chili\"")
         }
     }
     compileOptions {
